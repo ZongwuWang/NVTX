@@ -8,6 +8,7 @@ import contextlib
 import os
 
 from functools import wraps
+from time import sleep
 
 from nvtx._lib import (
     Domain,
@@ -84,6 +85,8 @@ class annotate:
         )
 
     def __enter__(self):
+        os.system('kill `pgrep -f dcgm`')
+        # sleep(0.1)
         libnvtx_push_range(self.attributes, self.domain.handle)
         return self
 
@@ -94,6 +97,9 @@ class annotate:
     def __call__(self, func):
         if not self.attributes.message:
             self.attributes.message = func.__name__
+        # os.system('kill `pgrep -f dcgm`')
+
+        # sleep(1)
 
         @wraps(func)
         def inner(*args, **kwargs):
