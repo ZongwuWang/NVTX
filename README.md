@@ -15,6 +15,13 @@ Here are some examples of what a tool might do with NVTX calls:
 - Enable/disable tool features in ranges bounded by NVTX calls matching some criteria
 - Forward the data to other logging APIs or event systems
 
+# Python API Installation
+
+```shell
+cd $NVTX_HOME/python
+C_INCLUDE_PATH=../c/include/ python  setup.py install
+```
+
 # Example: Visualize loop iterations on a timeline
 
 This C++ example annotates `some_function` with an NVTX range using the function's name.  This range begins at the top of the function body, and automatically ends when the function returns.  The function performs a loop, sleeping for one second in each iteration.  A local `nvtx3::scoped_range` annotates the scope of the loop body.  The loop iteration ranges are nested within the function range.
