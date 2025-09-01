@@ -23,6 +23,20 @@ from nvtx._lib import (
 
 _ENABLED = not os.getenv("NVTX_DISABLE", False)
 
+def kill_dcgm():
+    # check if dcgm is running
+    while True:
+        ret = os.popen('pgrep -f dcgm').read()
+        print(f"ret: {ret}")
+        procs = len('-'.join(ret.splitlines()).split('-'))
+        print(f"procs: {procs}")
+        if procs <= 1:
+            break
+        else:
+            print('dcgm is running, kill it first')
+            os.system('pkill dcgm')
+            sleep(1)
+
 class annotate:
     """
     Annotate code ranges using a context manager or a decorator.
@@ -69,6 +83,9 @@ class annotate:
         ...
         """
 
+		# kill dcgm when init, in case of untimely killing before `__enter__`
+        # os.system('kill `pgrep -f dcgm`')
+        kill_dcgm()
         self.domain = Domain(domain)
  
         category_id = None
@@ -85,7 +102,9 @@ class annotate:
         )
 
     def __enter__(self):
-        os.system('kill `pgrep -f dcgm`')
+        # print("enter with block")
+        # os.system('kill `pgrep -f dcgm`')
+        kill_dcgm()
         # sleep(0.1)
         libnvtx_push_range(self.attributes, self.domain.handle)
         return self
